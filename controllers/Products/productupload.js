@@ -5,8 +5,6 @@ const Product = require("../../models/Productmodel");
 const { errorResponse , successResponse} = require("../components");
 
 
-
-
 cloudinary.config({
     cloud_name: 'dv0anyldo',
     api_key: '838368846159638',
@@ -25,46 +23,62 @@ const upload = multer({
 exports.uploadProduct = async (req, res) => {
     try {
         upload(req, res, async function (err) {
-            if (err instanceof multer.MulterError) {
-                console.log(err);
-                return res.status(400).json(errorResponse('File upload error'));
-            } else if (err) {
-                return res.status(500).json(errorResponse('Internal server error'));
-            }
-            
-            if (!req.files || Object.keys(req.files).length === 0) {
-                return res.status(400).json(errorResponse('At least one product image is required'));
-            }
-
-            const { name, price, description, paymentPlan } = req.body;
-
-            const images = [];
-            for (let i = 1; i <= 3; i++) {
-                if (req.files[`image${i}`]) {
-                    const result = await cloudinary.uploader.upload(req.files[`image${i}`][0].path, {
-                        folder: 'product-images',
-                        allowed_formats: ['jpg', 'jpeg', 'png']
-                    });
-                    images.push(result.secure_url);
+            try {
+                if (err instanceof multer.MulterError) {
+                    console.log(err);
+                    return res.status(400).json(errorResponse('File upload error'));
+                } else if (err) {
+                    return res.status(500).json(errorResponse('Internal server error'));
                 }
+                
+                if (!req.files || Object.keys(req.files).length === 0) {
+                    return res.status(400).json(errorResponse('At least one product image is required'));
+                }
+
+                const { name, price, description, paymentPlan, availableStock, categories } = req.body;
+
+                const images = [];
+                for (let i = 1; i <= 3; i++) {
+                    if (req.files[`image${i}`]) {
+                        const file = req.files[`image${i}`][0];
+                        // Check if the file format is allowed
+                        const allowedFormats = ['jpg', 'jpeg', 'png'];
+                        const fileFormat = file.originalname.split('.').pop().toLowerCase();
+                        if (!allowedFormats.includes(fileFormat)) {
+                            return res.status(400).json(errorResponse(`Image file format ${fileFormat} not allowed`));
+                        }
+                        
+                        const result = await cloudinary.uploader.upload(file.path, {
+                            folder: 'product-images',
+                            allowed_formats: allowedFormats
+                        });
+                        images.push(result.secure_url);
+                    }
+                }
+
+                const newProduct = new Product({
+                    name,
+                    price,
+                    description,
+                    images,
+                    availableStock,
+                    categories
+                });
+
+                await newProduct.save();
+
+                const uploadedProduct = await Product.findById(newProduct._id);
+
+                res.status(201).json(successResponse('Product uploaded successfully', uploadedProduct));
+            } catch (error) {
+                console.error('Error uploading product:', error);
+                res.status(500).json(errorResponse('Internal Server Error'));
             }
-
-            const newProduct = new Product({
-                name,
-                price,
-                description,
-                paymentPlan,
-                images
-            });
-
-            await newProduct.save();
-
-            const uploadedProduct = await Product.findById(newProduct._id);
-
-            res.status(201).json(successResponse('Product uploaded successfully', uploadedProduct));
         });
     } catch (error) {
         console.error('Error uploading product:', error);
         res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
+
+

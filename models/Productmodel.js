@@ -13,14 +13,21 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  paymentPlan: {
-    type: String,
-    enum: ['weekly', 'monthly'],
-    required: true
-  },
   images: {
-    type: [String], // Array of image URLs
+    type: [String], 
     default: []
+  },
+  totalBuyers: {
+    type: Number,
+    default: 0
+  },
+  categories: {
+    type: [String],
+    default: []
+  },
+  availableStock: {
+    type: Number,
+    default: 0
   }
 });
 
