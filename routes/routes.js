@@ -1,8 +1,15 @@
+const { createUser } = require("../controllers/Auth/user");
 const { uploadProduct } = require("../controllers/Products/productupload");
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions } = require("../controllers/Wallet/wallets");
 
 const router = require("express").Router();
 
+
+//Users
+router.post("/Api/register",createUser);
+
+
+//Wallets
 router.post("/Api/createwallet",createwallet);
 router.get("/Api/balance", getWalletBalance);
 router.get("/Api/transactions/:walletAccountNumber", getWalletTransactions);

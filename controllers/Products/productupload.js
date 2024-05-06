@@ -35,7 +35,7 @@ exports.uploadProduct = async (req, res) => {
                     return res.status(400).json(errorResponse('At least one product image is required'));
                 }
 
-                const { name, price, description, paymentPlan, availableStock, categories } = req.body;
+                const { name, price, description,availableStock, categories } = req.body;
 
                 const images = [];
                 for (let i = 1; i <= 3; i++) {

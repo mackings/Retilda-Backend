@@ -15,6 +15,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  accountType: {
+    type: String,
+    enum: ['standard', 'premium', 'admin'],
+    default: 'standard'
+  },
+  creditScore: {
+    type: Number,
+    default: 0
+  },
   wallet: {
     walletReference: {
       type: String

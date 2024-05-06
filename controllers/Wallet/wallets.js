@@ -2,16 +2,25 @@ const express = require("express");
 const axios = require('axios');
 const dotenv = require("dotenv").config();
 const {errorResponse,successResponse} = require("../components");
+const User = require("../../models/Authmodel");
+
 const credentials = `${process.env.CLIENT_KEY}:${process.env.CLIENT_SECRET}`;
 const authString = Buffer.from(credentials).toString('base64');
 
 
+
 exports.createwallet = async (req, res) => {
-
+    
     try {
-        const payload = {
+       
+        const existingUser = await User.findOne({ email: req.body.customerEmail });
 
-            walletReference: req.body. walletReference,
+        if (!existingUser) {
+            return res.status(400).json(errorResponse('User email not registered on Retilda', 400));
+        }
+
+        const payload = {
+            walletReference: req.body.walletReference,
             walletName: req.body.walletName,
             customerName: req.body.customerName,
             bvnDetails: {
@@ -20,7 +29,7 @@ exports.createwallet = async (req, res) => {
             },
             customerEmail: req.body.customerEmail
         };
-        
+
         const response = await axios.post(process.env.CREATE_WALLET, payload, {
             headers: {
                 'Content-Type': 'application/json',
@@ -28,12 +37,33 @@ exports.createwallet = async (req, res) => {
             }
         });
 
-        res.status(response.status).json(successResponse('Wallet created successfully', response.data));
+        if (response.status !== 200) {
+            return res.status(response.status).json(errorResponse('Error creating wallet', response.status));
+        }
+
+        const updatedUser = await User.findOneAndUpdate(
+            { email: req.body.customerEmail }, 
+            { 
+                wallet: response.data,
+                accountType: 'premium' 
+            }, 
+            { new: true }
+        );
+
+        const responseData = {
+            ...updatedUser.toObject(),
+            wallet: response.data
+        };
+
+        res.status(response.status).json(successResponse('Wallet created successfully', responseData));
     } catch (error) {
         console.error('Error creating wallet:', error);
         res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
+
+
+
 
 
 exports.getWalletBalance = async (req, res) => {
