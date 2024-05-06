@@ -10,9 +10,7 @@ const authString = Buffer.from(credentials).toString('base64');
 
 
 exports.createwallet = async (req, res) => {
-    
     try {
-       
         const existingUser = await User.findOne({ email: req.body.customerEmail });
 
         if (!existingUser) {
@@ -57,10 +55,12 @@ exports.createwallet = async (req, res) => {
 
         res.status(response.status).json(successResponse('Wallet created successfully', responseData));
     } catch (error) {
-        console.error('Error creating wallet:', error);
-        res.status(500).json(errorResponse('Internal Server Error'));
+        const errorMessage = error.response.data.responseMessage || 'Error creating wallet';
+        console.error('Error creating wallet:', errorMessage);
+        res.status(error.response.status || 500).json(errorResponse(errorMessage));
     }
 };
+
 
 
 
