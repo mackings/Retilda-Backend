@@ -27,6 +27,7 @@ exports.createwallet = async (req, res) => {
             },
             customerEmail: req.body.customerEmail
         };
+        console.log(payload);
 
         const response = await axios.post(process.env.CREATE_WALLET, payload, {
             headers: {
@@ -36,6 +37,7 @@ exports.createwallet = async (req, res) => {
         });
 
         if (response.status !== 200) {
+            console.log(payload);
             return res.status(response.status).json(errorResponse('Error creating wallet', response.status));
         }
 
@@ -55,8 +57,10 @@ exports.createwallet = async (req, res) => {
 
         res.status(response.status).json(successResponse('Wallet created successfully', responseData));
     } catch (error) {
+        
         const errorMessage = error.response.data.responseMessage || 'Error creating wallet';
         console.error('Error creating wallet:', errorMessage);
+        console.log(error);
         res.status(error.response.status || 500).json(errorResponse(errorMessage));
     }
 };
