@@ -4,8 +4,6 @@ const { errorResponse, successResponse } = require('../components');
 
 
 
-
-
 exports.createUser = async (req, res) => {
     try {
         const existingUser = await User.findOne({ email: req.body.email });

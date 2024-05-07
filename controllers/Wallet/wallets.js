@@ -1,11 +1,13 @@
 const express = require("express");
 const axios = require('axios');
 const dotenv = require("dotenv").config();
-const {errorResponse,successResponse} = require("../components");
+const {errorResponse, successResponse, generateUniqueReference} = require("../components");
 const User = require("../../models/Authmodel");
 
 const credentials = `${process.env.CLIENT_KEY}:${process.env.CLIENT_SECRET}`;
 const authString = Buffer.from(credentials).toString('base64');
+
+
 
 
 
@@ -27,7 +29,6 @@ exports.createwallet = async (req, res) => {
             },
             customerEmail: req.body.customerEmail
         };
-        console.log(payload);
 
         const response = await axios.post(process.env.CREATE_WALLET, payload, {
             headers: {
@@ -37,35 +38,34 @@ exports.createwallet = async (req, res) => {
         });
 
         if (response.status !== 200) {
-            console.log(payload);
             return res.status(response.status).json(errorResponse('Error creating wallet', response.status));
         }
 
         const updatedUser = await User.findOneAndUpdate(
             { email: req.body.customerEmail }, 
             { 
-                wallet: response.data,
-                accountType: 'premium' 
+                $set: {
+                    'wallet': response.data.responseBody, // Update with wallet details from response
+                    'accountType': 'premium' // Set the account type to premium
+                }
             }, 
             { new: true }
         );
 
         const responseData = {
             ...updatedUser.toObject(),
-            wallet: response.data
+            wallet: response.data.responseBody
         };
 
         res.status(response.status).json(successResponse('Wallet created successfully', responseData));
+
     } catch (error) {
-        
         const errorMessage = error.response.data.responseMessage || 'Error creating wallet';
         console.error('Error creating wallet:', errorMessage);
         console.log(error);
         res.status(error.response.status || 500).json(errorResponse(errorMessage));
     }
 };
-
-
 
 
 
@@ -89,6 +89,7 @@ exports.getWalletBalance = async (req, res) => {
 };
 
 
+
 exports.getWalletTransactions = async (req, res) => {
 
     try {
@@ -110,6 +111,9 @@ exports.getWalletTransactions = async (req, res) => {
         res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
+
+
+
 
 exports.debitWallet = async (req, res) => {
 
@@ -139,6 +143,9 @@ exports.debitWallet = async (req, res) => {
         res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
+
+
+
 
 exports.transferVerification = async (req, res) => {
     try {

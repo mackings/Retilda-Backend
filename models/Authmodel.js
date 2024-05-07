@@ -44,12 +44,17 @@ const userSchema = new mongoose.Schema({
     },
     customerEmail: {
       type: String
+    },
+    accountNumber: { // Add accountNumber field
+      type: String
     }
   },
+  
   purchases: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product'
+      ref: 'Product',
+      required: true
     },
     paymentPlan: {
       type: String,
