@@ -1,5 +1,51 @@
 const mongoose = require('mongoose');
 
+const paymentSchema = new mongoose.Schema({
+
+  paymentDate: {
+    type: Date,
+    required: true
+  },
+
+  amountPaid: {
+    type: Number,
+    required: true
+  },
+
+  amountToPay: {
+    type: Number,
+    required: true
+  },
+
+  nextPaymentDate: {
+    type: Date,
+    required: true
+  },
+
+  status: {
+    type: String,
+    enum: ['pending', 'completed'],
+    default: 'pending'
+  }
+
+});
+
+
+const purchaseSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  paymentPlan: {
+    type: String,
+    enum: ['weekly', 'monthly'],
+    required: true
+  },
+  payments: [paymentSchema] 
+});
+
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -45,38 +91,11 @@ const userSchema = new mongoose.Schema({
     customerEmail: {
       type: String
     },
-    accountNumber: { // Add accountNumber field
+    accountNumber: { 
       type: String
     }
   },
-  
-  purchases: [{
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true
-    },
-    paymentPlan: {
-      type: String,
-      enum: ['weekly', 'monthly'],
-      required: true
-    },
-    payments: [{
-      paymentDate: {
-        type: Date,
-        required: true
-      },
-      amount: {
-        type: Number,
-        required: true
-      },
-      status: {
-        type: String,
-        enum: ['pending', 'completed'],
-        default: 'pending'
-      }
-    }]
-  }]
+  purchases: [purchaseSchema] 
 });
 
 const User = mongoose.model('User', userSchema);
