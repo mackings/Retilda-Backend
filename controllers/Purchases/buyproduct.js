@@ -157,7 +157,6 @@ exports.installmentPayment = async (req, res) => {
             return res.status(422).json(errorResponse(response.data.responseMessage, 422));
         }
 
-        // Update the paid installment's status and amountPaid
         installment.amountPaid += totalAmount;
         installment.status = 'completed';
 
