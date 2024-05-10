@@ -1,0 +1,7 @@
+services:
+  - name: retilda
+    type: web
+    buildCommand: npm install && npm run build
+    env:
+      - key: NODE_VERSION
+        value: 16
