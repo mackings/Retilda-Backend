@@ -8,8 +8,8 @@ const authString = Buffer.from(credentials).toString('base64');
 const reference = generateUniqueReference('Retilda');
 
 
-
 exports.buyProduct = async (req, res) => {
+    
     try {
         const { productId, paymentPlan, numberOfInstallments } = req.body;
         const product = await Product.findById(productId);

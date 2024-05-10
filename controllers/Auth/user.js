@@ -1,4 +1,6 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();
 const User = require('../../models/Authmodel');
 const { errorResponse, successResponse } = require('../components');
 
@@ -38,3 +40,44 @@ exports.createUser = async (req, res) => {
         return res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
+
+
+
+
+
+exports.loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json(errorResponse('User not found', 404));
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (!isPasswordMatch) {
+            return res.status(401).json(errorResponse('Invalid credentials', 401));
+        }
+
+        const payload = {
+            user: {
+                id: user.id,
+                email: user.email
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.VALIDATION_KEY, // Use the same key for signing
+            { expiresIn: '1h' },
+            (err, token) => {
+                if (err) throw err;
+                res.status(200).json(successResponse('Login successful', { token, user }));
+            }
+        );
+    } catch (error) {
+        console.error('Error logging in user:', error);
+        res.status(500).json(errorResponse('Internal server error', 500));
+    }
+};
+
