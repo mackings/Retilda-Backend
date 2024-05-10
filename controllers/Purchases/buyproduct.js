@@ -18,7 +18,7 @@ exports.buyProduct = async (req, res) => {
             return res.status(404).json(errorResponse('Product not found', 404));
         }
 
-        const amountToPay = product.price / numberOfInstallments;
+        const amountToPay = (product.price / numberOfInstallments).toFixed(2);
         const payments = [];
         let currentDate = new Date();
 
@@ -118,7 +118,7 @@ exports.installmentPayment = async (req, res) => {
         if (purchaseId) {
             purchase = user.purchases.find(purchase => purchase._id.toString() === purchaseId);
         } else if (productId) {
-            // Validate productId
+            
             if (!mongoose.Types.ObjectId.isValid(productId)) {
                 return res.status(400).json(errorResponse('Invalid Product ID', 400));
             }
@@ -182,73 +182,6 @@ exports.installmentPayment = async (req, res) => {
 
 
 
-
-// exports.installmentPayment = async (req, res) => {
-
-//     try {
-//         const { userId } = req.body;
-
-//         const user = await User.findById(userId);
-
-//         if (!user) {
-//             return res.status(404).json(errorResponse('User not found', 404));
-//         }
-
-//         const purchase = user.purchases.find(purchase => {
-//             return purchase.payments.some(payment => payment.status === 'pending');
-//         });
-
-//         if (!purchase) {
-//             return res.status(404).json(errorResponse('All installments have been paid', 404));
-//         }
-
-//         const installment = purchase.payments.find(payment => payment.status === 'pending');
-
-//         const totalAmount = installment.amountToPay;
-//         const { accountNumber } = user.wallet;
-//         const { ADMIN_WALLET_ACCOUNT_NUMBER, ADMIN_WALLET_BANK_CODE } = process.env;
-
-//         if (totalAmount > user.wallet.balance) {
-//             return res.status(403).json(errorResponse('Insufficient funds in the wallet', 403));
-//         }
-        
-//         console.log(totalAmount);
-
-//         const payload = {
-
-//             amount: totalAmount,
-//             reference: generateUniqueReference('Debit'),
-//             narration: 'Payment for installment',
-//             destinationBankCode: ADMIN_WALLET_BANK_CODE,
-//             destinationAccountNumber: ADMIN_WALLET_ACCOUNT_NUMBER,
-//             currency: 'NGN',
-//             sourceAccountNumber: accountNumber,
-//             destinationAccountName: 'udoma kingsley'
-
-//         };
-
-//         const response = await axios.post(process.env.WALLET_DEBIT, payload, {
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Basic ${authString}`
-//             }
-//         });
-
-//         if (!response.data.requestSuccessful) {
-//             return res.status(422).json(errorResponse(response.data.responseMessage, 422));
-//         }
-
-//         installment.amountPaid += totalAmount;
-//         installment.status = 'completed';
-
-//         await user.save();
-
-//         res.status(200).json(successResponse('Payment successful', installment));
-//     } catch (error) {
-//         console.error('Error debiting wallet:', error);
-//         res.status(500).json(errorResponse('Internal Server Error'));
-//     }
-// };
 
 
 
