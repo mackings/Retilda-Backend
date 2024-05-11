@@ -6,19 +6,25 @@ const { successResponse, errorResponse } = require('../components');
 
 exports.products = async (req, res) => {
     try {
-        const products = await Product.find({}, 'name price description images categories')
+        const products = await Product.find({}, 'name  price description specification brand images categories')
                                        .sort({ createdAt: -1 }) // Sort by createdAt in descending order
                                        .populate('categories'); // Populate categories field if it's a reference
-
+    
+        if (!products || products.length === 0) {
+            return res.status(404).json(errorResponse('No products found', 404));
+        }
+    
         res.status(200).json(successResponse('Products retrieved successfully', products));
     } catch (error) {
         console.error('Error retrieving products:', error);
         res.status(500).json(errorResponse('Internal server error', 500));
     }
+    
 };
 
 
 exports.getProductsByCategory = async (req, res) => {
+
     try {
         const categoryName = req.params.categoryName;
 

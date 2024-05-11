@@ -13,6 +13,14 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  specification: {
+    type: String,
+    required: true
+  },
+  brand: {
+    type: String,
+    required: true
+  },
   images: {
     type: [String], 
     default: []
