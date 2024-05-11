@@ -105,6 +105,7 @@ exports.buyProduct = async (req, res) => {
 
 
 exports.installmentPayment = async (req, res) => {
+    
     try {
         const { userId, purchaseId, productId } = req.body;
 

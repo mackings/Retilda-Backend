@@ -48,9 +48,10 @@ const purchaseSchema = new mongoose.Schema({
 
   paymentPlan: {
     type: String,
-    enum: ['weekly', 'monthly'],
+    enum: [ 'once','weekly', 'monthly'],
     required: true
   },
+  
   payments: [paymentSchema] 
 });
 

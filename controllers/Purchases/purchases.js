@@ -8,6 +8,7 @@ const authString = Buffer.from(credentials).toString('base64');
 
 
 exports.getPurchases = async (req, res) => {
+    
     try {
         const user = await User.findById(req.params.userId).populate({
             path: 'purchases.product',
