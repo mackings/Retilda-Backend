@@ -23,6 +23,7 @@ exports.products = async (req, res) => {
 };
 
 
+
 exports.getProductsByCategory = async (req, res) => {
 
     try {
@@ -73,7 +74,4 @@ exports.priceFilter = async (req, res) => {
 
   };
   
-
-
-
 

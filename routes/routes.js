@@ -2,7 +2,7 @@ const { createUser, loginUser } = require("../controllers/Auth/user");
 const { products, priceFilter, getProductsByCategory } = require("../controllers/Products/products");
 const { uploadProduct } = require("../controllers/Products/productupload");
 const { buyProduct, installmentPayment } = require("../controllers/Purchases/buyproduct");
-const { getPurchases } = require("../controllers/Purchases/purchases");
+const { getPurchases, updateDeliveryStatus } = require("../controllers/Purchases/purchases");
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
 
@@ -12,6 +12,7 @@ const router = require("express").Router();
 //Users
 router.post("/Api/register",createUser);
 router.post("/Api/login", loginUser);
+router.get("/Api/products",verifyToken, products);
 
 
 //Wallets
@@ -21,13 +22,14 @@ router.get("/Api/transactions/:walletAccountNumber",verifyToken, getWalletTransa
 router.post("/Api/debit",verifyToken, debitWallet);
 router.post("/Api/verify-transfer",verifyToken, transferVerification);
 router.post("/Api/buyproduct",verifyToken, buyProduct);
+router.post("/Api/purchases/installment",verifyToken,installmentPayment);
 
 //Products
-router.get("/Api/products",verifyToken, products);
+router.post("/Api/products/updatedelivery",verifyToken, updateDeliveryStatus);
 router.get("/Api/products/category/:categoryName",verifyToken, getProductsByCategory);
 router.get("/Api/products/filter",verifyToken,priceFilter);
 router.post("/Api/uploadproduct",verifyToken, uploadProduct);
 router.get("/Api/purchases/:userId",verifyToken, getPurchases);
-router.post("/Api/purchases/installment",verifyToken,installmentPayment);
+
 
 module.exports = router;

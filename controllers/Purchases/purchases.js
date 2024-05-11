@@ -45,6 +45,7 @@ exports.getPurchases = async (req, res) => {
                     images: purchase.product.images[0]
                 },
                 paymentPlan: purchase.paymentPlan,
+                deliveryStatus:purchase.deliveryStatus,
                 payments: paymentsData
             };
         }).filter(purchase => purchase !== null); 
@@ -55,6 +56,40 @@ exports.getPurchases = async (req, res) => {
         res.status(500).json(errorResponse('Internal server error', 500));
     }
 };
+
+
+
+
+exports.updateDeliveryStatus = async (req, res) => {
+
+    try {
+        const { userId, purchaseId, deliveryStatus } = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json(errorResponse('User not found', 404));
+        }
+        const purchase = user.purchases.find(purchase => purchase._id.toString() === purchaseId);
+        if (!purchase) {
+            return res.status(404).json(errorResponse('Purchase not found', 404));
+        }
+        const allPaymentsCompleted = purchase.payments.every(payment => payment.status === 'completed');
+        if (!allPaymentsCompleted) {
+            return res.status(400).json(errorResponse('Cannot update delivery due to pending payments for this item', 400));
+        }
+
+        purchase.deliveryStatus = deliveryStatus;
+        await user.save();
+
+        res.status(200).json(successResponse('Delivery status updated successfully', purchase));
+
+    } catch (error) {
+        console.error('Error updating delivery status:', error);
+        res.status(500).json(errorResponse('Internal server error', 500));
+    }
+
+};
+
+
 
 
 

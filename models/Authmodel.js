@@ -37,6 +37,15 @@ const purchaseSchema = new mongoose.Schema({
     ref: 'Product',
     required: true
   },
+
+
+  deliveryStatus:{
+    type:String,
+    enum: ['pending', 'processing', 'completed'],
+    required: true,
+    default: 'pending'
+  },
+
   paymentPlan: {
     type: String,
     enum: ['weekly', 'monthly'],
