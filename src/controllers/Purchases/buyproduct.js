@@ -185,6 +185,84 @@ exports.installmentPayment = async (req, res) => {
 
 
 
+exports.onetimePayment = async (req, res) => {
+    try {
+        const { userId, productId } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json(errorResponse('User not found', 404));
+        }
+
+        if (!productId) {
+            return res.status(400).json(errorResponse('Product ID is required', 400));
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json(errorResponse('Product not found', 404));
+        }
+
+        const totalPrice = product.price;
+        if (totalPrice > user.wallet.balance) {
+            return res.status(403).json(errorResponse('Insufficient funds in the wallet', 403));
+        }
+
+        const payload = {
+            amount: totalPrice,
+            reference: generateUniqueReference('Debit'),
+            narration: `Payment for product ${product._id}`, // Include product ID for reference
+            destinationBankCode: process.env.ADMIN_WALLET_BANK_CODE, // Assuming destination info is still required
+            destinationAccountNumber: process.env.ADMIN_WALLET_ACCOUNT_NUMBER,
+            currency: 'NGN',
+            sourceAccountNumber: user.wallet.accountNumber,
+            destinationAccountName: 'udoma kingsley' // Assuming destination info is still required
+        };
+
+        const response = await axios.post(process.env.WALLET_DEBIT, payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${authString}`
+            }
+        });
+
+        if (!response.data.requestSuccessful) {
+            return res.status(422).json(errorResponse(response.data.responseMessage, 422));
+        }
+
+        const newPayment = {
+            paymentDate: new Date(),
+            amountPaid: totalPrice,
+            amountToPay: totalPrice,
+            nextPaymentDate: new Date(),
+            status: 'completed'
+        };
+
+        const newPurchase = {
+            product: productId,
+            paymentStatus: 'completed',
+            paymentDate: new Date(),
+            paymentPlan: 'once',
+            deliveryStatus:"processing",
+            payments: [newPayment]
+        };
+
+        user.purchases.push(newPurchase);
+        await user.save();
+
+        res.status(200).json(successResponse('Payment successful', newPurchase));
+    } catch (error) {
+        console.error('Error debiting wallet:', error);
+        res.status(500).json(errorResponse('Internal Server Error'));
+    }
+};
+
+
+
+
+
+
+
 
 
 

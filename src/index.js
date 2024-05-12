@@ -16,7 +16,7 @@ app.listen(process.env.PORT || 3000, async () => {
             useUnifiedTopology: true,
             ignoreUndefined: true,
         });
-        console.log("DB CONNECTED >>>");
+        console.log("DB CONNECTED >>>>");
     } catch (error) {
         console.error("Error connecting to database:", error);
     }

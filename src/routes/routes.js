@@ -1,7 +1,7 @@
 const { createUser, loginUser } = require("../controllers/Auth/user");
 const { products, priceFilter, getProductsByCategory } = require("../controllers/Products/products");
 const { uploadProduct } = require("../controllers/Products/productupload");
-const { buyProduct, installmentPayment } = require("../controllers/Purchases/buyproduct");
+const { buyProduct, installmentPayment, onetimePayment } = require("../controllers/Purchases/buyproduct");
 const { getPurchases, updateDeliveryStatus } = require("../controllers/Purchases/purchases");
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
@@ -15,7 +15,7 @@ router.post("/Api/login", loginUser);
 router.get("/Api/products",verifyToken, products);
 
 
-//Wallets
+//Wallets and payments
 router.post("/Api/createwallet",verifyToken,createwallet);
 router.get("/Api/balance",verifyToken, getWalletBalance);
 router.get("/Api/transactions/:walletAccountNumber",verifyToken, getWalletTransactions);
@@ -23,6 +23,7 @@ router.post("/Api/debit",verifyToken, debitWallet);
 router.post("/Api/verify-transfer",verifyToken, transferVerification);
 router.post("/Api/buyproduct",verifyToken, buyProduct);
 router.post("/Api/purchases/installment",verifyToken,installmentPayment);
+router.post("/Api/purchases/onetimepayment",verifyToken,onetimePayment);
 
 //Products
 router.post("/Api/products/updatedelivery",verifyToken, updateDeliveryStatus);
