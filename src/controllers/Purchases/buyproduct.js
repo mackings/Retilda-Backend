@@ -186,6 +186,7 @@ exports.installmentPayment = async (req, res) => {
 
 
 exports.onetimePayment = async (req, res) => {
+    
     try {
         const { userId, productId } = req.body;
 

@@ -59,25 +59,11 @@ exports.loginUser = async (req, res) => {
             return res.status(401).json(errorResponse('Invalid credentials', 401));
         }
 
-        const payload = {
-            user: {
-                id: user.id,
-                email: user.email
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.VALIDATION_KEY, // Use the same key for signing
-            { expiresIn: '1h' },
-            (err, token) => {
-                if (err) throw err;
-                res.status(200).json(successResponse('Login successful', { token, user }));
-            }
-        );
+        res.status(200).json(successResponse('Login successful', { user }));
     } catch (error) {
         console.error('Error logging in user:', error);
-        res.status(500).json(errorResponse('Internal server error', 500));
+        res.status(500).json(errorResponse('Internal server error', 500, error.message));
     }
 };
+
 
