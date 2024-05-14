@@ -56,7 +56,7 @@ exports.loginUser = async (req, res) => {
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(401).json(errorResponse('Invalid credentials', 401, 'Invalid credentials'));
+            return res.status(401).json(errorResponse(401, 'Invalid credentials'));
         }
 
         const payload = {
@@ -68,7 +68,7 @@ exports.loginUser = async (req, res) => {
 
         jwt.sign(
             payload,
-            process.env.VALIDATION_KEY, // Use the same key for signing
+            process.env.VALIDATION_KEY, 
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
@@ -77,8 +77,10 @@ exports.loginUser = async (req, res) => {
         );
     } catch (error) {
         console.error('Error logging in user:', error);
-        res.status(500).json(errorResponse('Internal server error', 500, 'Internal server error'));
+        const errorMessage = error.message || 'Internal server error';
+        res.status(500).json(errorResponse(errorMessage, 500, errorMessage));
     }
 };
+
 
 
