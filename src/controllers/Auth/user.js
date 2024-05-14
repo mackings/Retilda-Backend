@@ -51,18 +51,33 @@ exports.loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json(errorResponse('User not found', 404));
+            return res.status(404).json(errorResponse('User not found', 404, 'User not found'));
         }
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(401).json(errorResponse('Invalid credentials', 401));
+            return res.status(401).json(errorResponse('Invalid credentials', 401, 'Invalid credentials'));
         }
 
-        res.status(200).json(successResponse('Login successful', { user }));
+        const payload = {
+            user: {
+                id: user.id,
+                email: user.email
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.VALIDATION_KEY, // Use the same key for signing
+            { expiresIn: '1h' },
+            (err, token) => {
+                if (err) throw err;
+                res.status(200).json(successResponse('Login successful', { token, user }));
+            }
+        );
     } catch (error) {
         console.error('Error logging in user:', error);
-        res.status(500).json(errorResponse('Internal server error', 500, error.message));
+        res.status(500).json(errorResponse('Internal server error', 500, 'Internal server error'));
     }
 };
 
