@@ -18,19 +18,22 @@ exports.getPurchases = async (req, res) => {
             return res.status(404).json(errorResponse('User not found', 404));
         }
 
+        let totalAmountPaid = 0; // Initialize total amount paid
+        let totalAmountToPay = 0; // Initialize total amount to pay
+
         const purchasesData = user.purchases.map((purchase, index) => {
             if (!purchase.product) {
                 console.error(`Purchase at index ${index} has a null product.`);
                 return null;
             }
 
-            // Calculate total amount to be paid for this purchase
-            let totalAmountToPay = 0;
-            purchase.payments.forEach(payment => {
-                totalAmountToPay += payment.amountToPay
-            });
+            // Calculate total amount paid for this purchase
+            const totalPaidForPurchase = purchase.payments.reduce((acc, payment) => acc + payment.amountPaid, 0);
+            totalAmountPaid += totalPaidForPurchase; // Add to total amount paid
 
-            totalAmountToPay = Math.round(totalAmountToPay * 100) / 100;
+            // Calculate total amount to pay for this purchase
+            const totalToPayForPurchase = purchase.payments.reduce((acc, payment) => acc + payment.amountToPay, 0);
+            totalAmountToPay += totalToPayForPurchase; // Add to total amount to pay
 
             const paymentsData = purchase.payments.map(payment => {
                 const paymentDate = payment.status === 'completed' ? payment.paymentDate : 'Not paid';
@@ -54,17 +57,24 @@ exports.getPurchases = async (req, res) => {
                 },
                 paymentPlan: purchase.paymentPlan,
                 deliveryStatus: purchase.deliveryStatus,
-                totalAmountToPay: totalAmountToPay, // Adding total amount to pay
+                totalAmountToPay: totalToPayForPurchase, // Add total amount to pay for this purchase
+                totalPaidForPurchase: totalPaidForPurchase, // Add total paid for this purchase
                 payments: paymentsData
             };
         }).filter(purchase => purchase !== null); 
 
-        res.status(200).json(successResponse('Purchases retrieved successfully', purchasesData));
+        res.status(200).json(successResponse('Purchases retrieved successfully', {
+            purchasesData: purchasesData,
+            totalAmountPaid: totalAmountPaid, // Add total amount paid to response
+            totalAmountToPay: totalAmountToPay // Add total amount to pay to response
+        }));
     } catch (error) {
         console.error('Error retrieving user purchases:', error);
         res.status(500).json(errorResponse('Internal server error', 500));
     }
 };
+
+
 
 
 
