@@ -8,7 +8,6 @@ const authString = Buffer.from(credentials).toString('base64');
 
 
 exports.getPurchases = async (req, res) => {
-
     try {
         const user = await User.findById(req.params.userId).populate({
             path: 'purchases.product',
@@ -24,6 +23,14 @@ exports.getPurchases = async (req, res) => {
                 console.error(`Purchase at index ${index} has a null product.`);
                 return null;
             }
+
+            // Calculate total amount to be paid for this purchase
+            let totalAmountToPay = 0;
+            purchase.payments.forEach(payment => {
+                totalAmountToPay += payment.amountToPay
+            });
+
+            totalAmountToPay = Math.round(totalAmountToPay * 100) / 100;
 
             const paymentsData = purchase.payments.map(payment => {
                 const paymentDate = payment.status === 'completed' ? payment.paymentDate : 'Not paid';
@@ -46,7 +53,8 @@ exports.getPurchases = async (req, res) => {
                     images: purchase.product.images[0]
                 },
                 paymentPlan: purchase.paymentPlan,
-                deliveryStatus:purchase.deliveryStatus,
+                deliveryStatus: purchase.deliveryStatus,
+                totalAmountToPay: totalAmountToPay, // Adding total amount to pay
                 payments: paymentsData
             };
         }).filter(purchase => purchase !== null); 
@@ -57,6 +65,7 @@ exports.getPurchases = async (req, res) => {
         res.status(500).json(errorResponse('Internal server error', 500));
     }
 };
+
 
 
 
