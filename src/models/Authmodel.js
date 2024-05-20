@@ -57,16 +57,25 @@ const purchaseSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
-  username: {
+  
+  fullname: {
     type: String,
     required: true,
     unique: true
   },
+  
   email: {
     type: String,
     required: true,
     unique: true
   },
+
+  phone: {
+    type: String,
+    required: true,
+    unique: true
+  },
+
   password: {
     type: String,
     required: true
