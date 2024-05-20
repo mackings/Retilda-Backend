@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
         const newUser = new User({
             fullname: req.body.fullname,
             email: req.body.email,
-            username: req.body.phone,
+            phone: req.body.phone,
             password: hashedPassword,
             isVerified: false,
             accounttype: req.body.accounttype,
@@ -31,7 +31,7 @@ exports.createUser = async (req, res) => {
         return res.status(200).json(successResponse('User Registered Successfully', newUser));
     } catch (error) {
         console.error('Error creating user:', error.message);
-        return res.status(500).json(errorResponse('Error creating user:', error.message));
+        return res.status(500).json(errorResponse(error.message, 500));
        
     }
 };
