@@ -20,6 +20,7 @@ exports.createwallet = async (req, res) => {
         }
 
         const payload = {
+            
             walletReference: generateUniqueReference('New_Wallet'),
             walletName: req.body.walletName,
             customerName: req.body.customerName,
@@ -45,8 +46,8 @@ exports.createwallet = async (req, res) => {
             { email: req.body.customerEmail }, 
             { 
                 $set: {
-                    'wallet': response.data.responseBody, // Update with wallet details from response
-                    'accountType': 'premium' // Set the account type to premium
+                    'wallet': response.data.responseBody, 
+                    'accountType': 'premium' 
                 }
             }, 
             { new: true }

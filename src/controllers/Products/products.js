@@ -22,6 +22,24 @@ exports.products = async (req, res) => {
     
 };
 
+exports.getAllProductCategories = async (req, res) => {
+
+  try {
+      const products = await Product.find({}, 'categories');
+
+      const categories = [...new Set(products.flatMap(product => product.categories))];
+      if (!categories || categories.length === 0) {
+          return res.status(404).json(errorResponse('No categories found', 404));
+      }
+
+      res.status(200).json(successResponse('Categories retrieved successfully', categories));
+  } catch (error) {
+      console.error('Error retrieving product categories:', error);
+      res.status(500).json(errorResponse('Internal server error', 500));
+  }
+};
+
+
 
 
 exports.getProductsByCategory = async (req, res) => {
