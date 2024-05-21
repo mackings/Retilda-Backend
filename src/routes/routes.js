@@ -16,7 +16,7 @@ router.get("/Api/products",verifyToken, products);
 
 
 //Wallets and payments
-router.post("/Api/createwallet",verifyToken,createwallet);
+router.post("/Api/createwallet",createwallet);
 router.post("/Api/balance",verifyToken, getWalletBalance);
 router.get("/Api/transactions/:walletAccountNumber",verifyToken, getWalletTransactions);
 router.post("/Api/debit",verifyToken, debitWallet);

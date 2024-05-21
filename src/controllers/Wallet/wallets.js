@@ -20,7 +20,7 @@ exports.createwallet = async (req, res) => {
         }
 
         const payload = {
-            walletReference: req.body.walletReference,
+            walletReference: generateUniqueReference('New_Wallet'),
             walletName: req.body.walletName,
             customerName: req.body.customerName,
             bvnDetails: {
