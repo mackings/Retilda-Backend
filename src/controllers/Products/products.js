@@ -55,7 +55,8 @@ exports.getProductsByCategory = async (req, res) => {
 
         const categories = [...new Set(products.flatMap(product => product.categories))];
 
-        res.status(200).json(successResponse('Products retrieved successfully', { products, categories }));
+        res.status(200).json(successResponse('Products retrieved successfully', { products}));
+        //, categories 
     } catch (error) {
         console.error('Error retrieving products by category:', error);
         res.status(500).json(errorResponse('Internal server error', 500));
