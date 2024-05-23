@@ -43,7 +43,6 @@ exports.getAllProductCategories = async (req, res) => {
 
 
 exports.getProductsByCategory = async (req, res) => {
-
     try {
         const categoryName = req.params.categoryName;
 
@@ -53,10 +52,7 @@ exports.getProductsByCategory = async (req, res) => {
             return res.status(404).json(errorResponse('No products found in the specified category', 404));
         }
 
-        const categories = [...new Set(products.flatMap(product => product.categories))];
-
-        res.status(200).json(successResponse('Products retrieved successfully', { products}));
-        //, categories 
+        res.status(200).json(successResponse('Products retrieved successfully',  products ));
     } catch (error) {
         console.error('Error retrieving products by category:', error);
         res.status(500).json(errorResponse('Internal server error', 500));
