@@ -47,7 +47,7 @@ exports.getProductsByCategory = async (req, res) => {
     try {
         const categoryName = req.params.categoryName;
 
-        const products = await Product.find({ categories: categoryName }, 'name price description images categories');
+        const products = await Product.find({ categories: categoryName }, 'name price description images categories brand');
 
         if (!products || products.length === 0) {
             return res.status(404).json(errorResponse('No products found in the specified category', 404));
