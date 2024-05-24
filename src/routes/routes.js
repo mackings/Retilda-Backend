@@ -30,7 +30,7 @@ router.post("/Api/products/updatedelivery",verifyToken, updateDeliveryStatus);
 router.get("/Api/products/allcategory",verifyToken, getAllProductCategories);
 router.get("/Api/products/category/:categoryName",verifyToken, getProductsByCategory);
 router.get("/Api/products/filter",verifyToken,priceFilter);
-router.get("/Api/products/search", searchProducts);
+router.get("/Api/products/search",verifyToken, searchProducts);
 router.post("/Api/uploadproduct",verifyToken, uploadProduct);
 router.get("/Api/purchases/:userId",verifyToken, getPurchases);
 
