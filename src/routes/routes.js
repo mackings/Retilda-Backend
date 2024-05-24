@@ -1,5 +1,5 @@
 const { createUser, loginUser } = require("../controllers/Auth/user");
-const { products, priceFilter, getProductsByCategory, getAllProductCategories } = require("../controllers/Products/products");
+const { products, priceFilter, getProductsByCategory, getAllProductCategories, searchProducts } = require("../controllers/Products/products");
 const { uploadProduct } = require("../controllers/Products/productupload");
 const { buyProduct, installmentPayment, onetimePayment } = require("../controllers/Purchases/buyproduct");
 const { getPurchases, updateDeliveryStatus } = require("../controllers/Purchases/purchases");
@@ -30,6 +30,7 @@ router.post("/Api/products/updatedelivery",verifyToken, updateDeliveryStatus);
 router.get("/Api/products/allcategory",verifyToken, getAllProductCategories);
 router.get("/Api/products/category/:categoryName",verifyToken, getProductsByCategory);
 router.get("/Api/products/filter",verifyToken,priceFilter);
+router.get("/Api/products/search", searchProducts);
 router.post("/Api/uploadproduct",verifyToken, uploadProduct);
 router.get("/Api/purchases/:userId",verifyToken, getPurchases);
 

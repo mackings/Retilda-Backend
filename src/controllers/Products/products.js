@@ -7,8 +7,8 @@ const { successResponse, errorResponse } = require('../components');
 exports.products = async (req, res) => {
     try {
         const products = await Product.find({}, 'name  price description specification brand images categories')
-                                       .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-                                       .populate('categories'); // Populate categories field if it's a reference
+                                       .sort({ createdAt: -1 }) 
+                                       .populate('categories'); 
     
         if (!products || products.length === 0) {
             return res.status(404).json(errorResponse('No products found', 404));
@@ -21,6 +21,39 @@ exports.products = async (req, res) => {
     }
     
 };
+
+
+exports.searchProducts = async (req, res) => {
+    try {
+        const searchTerm = req.query.q;
+        if (!searchTerm) {
+            return res.status(400).json({ message: 'Query parameter q is required' });
+        }
+
+        const regex = new RegExp(searchTerm, 'i'); 
+
+        const products = await Product.find({
+            $or: [
+                { name: regex },
+                { description: regex },
+                { brand: regex },
+                { categories: regex }
+            ]
+        }, 'name price description specification brand images categories')
+        .populate('categories');
+
+        if (!products || products.length === 0) {
+            return res.status(404).json(errorResponse('No products found', 404));
+        }
+
+        res.status(200).json(successResponse('Products retrieved successfully', products));
+    } catch (error) {
+        console.error('Error searching products:', error);
+        res.status(500).json(errorResponse('Internal server error', 500));
+    }
+};
+
+
 
 exports.getAllProductCategories = async (req, res) => {
 
