@@ -48,8 +48,8 @@ exports.createwallet = async (req, res) => {
             { 
                 $set: {
                     'wallet': {
-                        walletName: req.body.walletName,
                         walletReference: walletData.walletReference,
+                        walletName: walletData.walletName,
                         customerName: walletData.customerName,
                         customerEmail: walletData.customerEmail,
                         feeBearer: walletData.feeBearer,
@@ -76,9 +76,9 @@ exports.createwallet = async (req, res) => {
             ...updatedUser.toObject(),
             wallet: updatedUser.wallet
         };
+        console.log(response);
 
-        res.status(response.status).json(successResponse('Wallet created successfully', responseData));
-        
+        res.status(200).json(successResponse('Wallet created successfully', responseData));
 
     } catch (error) {
         const errorMessage = error.response?.data?.responseMessage || 'Error creating wallet';
@@ -87,6 +87,7 @@ exports.createwallet = async (req, res) => {
         res.status(error.response?.status || 500).json(errorResponse(errorMessage));
     }
 };
+
 
 
 

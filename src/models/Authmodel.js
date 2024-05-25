@@ -57,24 +57,20 @@ const purchaseSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
-  
   fullname: {
     type: String,
     required: true,
   },
-
   email: {
     type: String,
     required: true,
     unique: true
   },
-
   phone: {
     type: String,
     required: true,
     unique: true
   },
-
   password: {
     type: String,
     required: true
@@ -98,6 +94,12 @@ const userSchema = new mongoose.Schema({
     customerName: {
       type: String
     },
+    customerEmail: {
+      type: String
+    },
+    feeBearer: {
+      type: String
+    },
     bvnDetails: {
       bvn: {
         type: String
@@ -106,15 +108,30 @@ const userSchema = new mongoose.Schema({
         type: Date
       }
     },
-    customerEmail: {
-      type: String
-    },
     accountNumber: { 
       type: String
+    },
+    accountName: {
+      type: String
+    },
+    topUpAccountDetails: {
+      accountNumber: {
+        type: String
+      },
+      accountName: {
+        type: String
+      },
+      bankCode: {
+        type: String
+      },
+      bankName: {
+        type: String
+      }
     }
   },
-  purchases: [purchaseSchema] 
+  purchases: [purchaseSchema]
 });
+
 
 const User = mongoose.model('User', userSchema);
 
