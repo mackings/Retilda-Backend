@@ -17,8 +17,9 @@ exports.buyProduct = async (req, res) => {
         if (!product) {
             return res.status(404).json(errorResponse('Product not found', 404));
         }
+        //const amountToPay = (product.price / numberOfInstallments).toFixed(2);
+        const amountToPay = Math.floor(product.price / numberOfInstallments);
 
-        const amountToPay = (product.price / numberOfInstallments).toFixed(2);
         const payments = [];
         let currentDate = new Date();
 
