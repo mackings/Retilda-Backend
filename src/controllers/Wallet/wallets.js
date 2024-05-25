@@ -20,7 +20,6 @@ exports.createwallet = async (req, res) => {
         }
 
         const payload = {
-            
             walletReference: generateUniqueReference('New_Wallet'),
             walletName: req.body.walletName,
             customerName: req.body.customerName,
@@ -42,12 +41,32 @@ exports.createwallet = async (req, res) => {
             return res.status(response.status).json(errorResponse('Error creating wallet', response.status));
         }
 
+        const walletData = response.data.responseBody;
+
         const updatedUser = await User.findOneAndUpdate(
             { email: req.body.customerEmail }, 
             { 
                 $set: {
-                    'wallet': response.data.responseBody, 
-                    'accountType': 'premium' 
+                    'wallet': {
+                        walletName: req.body.walletName,
+                        walletReference: walletData.walletReference,
+                        customerName: walletData.customerName,
+                        customerEmail: walletData.customerEmail,
+                        feeBearer: walletData.feeBearer,
+                        bvnDetails: {
+                            bvn: walletData.bvnDetails.bvn,
+                            bvnDateOfBirth: walletData.bvnDetails.bvnDateOfBirth
+                        },
+                        accountNumber: walletData.accountNumber,
+                        accountName: walletData.accountName,
+                        topUpAccountDetails: {
+                            accountNumber: walletData.topUpAccountDetails.accountNumber,
+                            accountName: walletData.topUpAccountDetails.accountName,
+                            bankCode: walletData.topUpAccountDetails.bankCode,
+                            bankName: walletData.topUpAccountDetails.bankName
+                        }
+                    },
+                    'accountType': 'premium'
                 }
             }, 
             { new: true }
@@ -55,18 +74,20 @@ exports.createwallet = async (req, res) => {
 
         const responseData = {
             ...updatedUser.toObject(),
-            wallet: response.data.responseBody
+            wallet: updatedUser.wallet
         };
 
         res.status(response.status).json(successResponse('Wallet created successfully', responseData));
+        
 
     } catch (error) {
-        const errorMessage = error.response.data.responseMessage || 'Error creating wallet';
+        const errorMessage = error.response?.data?.responseMessage || 'Error creating wallet';
         console.error('Error creating wallet:', errorMessage);
         console.log(error);
-        res.status(error.response.status || 500).json(errorResponse(errorMessage));
+        res.status(error.response?.status || 500).json(errorResponse(errorMessage));
     }
 };
+
 
 
 
