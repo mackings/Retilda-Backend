@@ -3,15 +3,65 @@ const axios = require('axios');
 const dotenv = require("dotenv").config();
 const {errorResponse, successResponse, generateUniqueReference} = require("../components");
 const User = require("../../models/Authmodel");
-
 const credentials = `${process.env.CLIENT_KEY}:${process.env.CLIENT_SECRET}`;
 const authString = Buffer.from(credentials).toString('base64');
 
 
+exports.createMandate = async (req, res) => {
+    try {
+        const {
+            contractCode,
+            mandateReference,
+            autoRenew,
+            customerName,
+            customerPhoneNumber,
+            customerEmailAddress,
+            customerAddress,
+            customerAccountName,
+            customerAccountNumber,
+            customerAccountBankCode,
+            mandateDescription,
+            mandateStartDate,
+            mandateEndDate,
+            mandateAmount,
+            debitAmount
+        } = req.body;
 
+        const url = process.env.CREATE_MANDATE
+        const requestBody = {
+            contractCode,
+            mandateReference,
+            autoRenew,
+            customerName,
+            customerPhoneNumber,
+            customerEmailAddress,
+            customerAddress,
+            customerAccountName,
+            customerAccountNumber,
+            customerAccountBankCode,
+            mandateDescription,
+            mandateStartDate,
+            mandateEndDate,
+            mandateAmount,
+            debitAmount
+        };     
+        const response = await axios.post(url, requestBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${authString}`
+            }
+        });
+
+        res.status(response.status).json(successResponse('Mandate created successfully', response.data));
+    } catch (error) {
+        console.error('Error creating mandate:', error);
+        res.status(500).json(errorResponse('Internal Server Error',error));
+    }
+};
 
 
 exports.createwallet = async (req, res) => {
+
     try {
         const existingUser = await User.findOne({ email: req.body.customerEmail });
 

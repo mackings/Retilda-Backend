@@ -3,7 +3,7 @@ const { products, priceFilter, getProductsByCategory, getAllProductCategories, s
 const { uploadProduct } = require("../controllers/Products/productupload");
 const { buyProduct, installmentPayment, onetimePayment } = require("../controllers/Purchases/buyproduct");
 const { getPurchases, updateDeliveryStatus } = require("../controllers/Purchases/purchases");
-const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions } = require("../controllers/Wallet/wallets");
+const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions, createMandate } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
 
 const router = require("express").Router();
@@ -33,6 +33,10 @@ router.get("/Api/products/filter",verifyToken,priceFilter);
 router.get("/Api/products/search",verifyToken, searchProducts);
 router.post("/Api/uploadproduct",verifyToken, uploadProduct);
 router.get("/Api/purchases/:userId",verifyToken, getPurchases);
+
+//Mandate
+
+router.post("/Api/mandate/create",verifyToken,createMandate);
 
 
 module.exports = router;

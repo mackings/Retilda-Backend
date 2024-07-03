@@ -83,6 +83,7 @@ exports.getPurchases = async (req, res) => {
 exports.updateDeliveryStatus = async (req, res) => {
 
     try {
+        
         const { userId, purchaseId, deliveryStatus } = req.body;
         const user = await User.findById(userId);
         if (!user) {
