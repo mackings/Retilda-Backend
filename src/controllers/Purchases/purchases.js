@@ -6,6 +6,14 @@ const { errorResponse, successResponse, generateUniqueReference } = require("../
 const credentials = `${process.env.CLIENT_KEY}:${process.env.CLIENT_SECRET}`;
 const authString = Buffer.from(credentials).toString('base64');
 
+const bodyParser = require('body-parser');
+const router = express.Router();
+
+const app = express();
+const BASE_URL = 'https://newwebservicetest.zenithbank.com:9443/directtransfer';
+let token = '';
+let tokenExpiration = new Date();
+
 
 exports.getPurchases = async (req, res) => {
     try {
@@ -75,11 +83,6 @@ exports.getPurchases = async (req, res) => {
 };
 
 
-
-
-
-
-
 exports.updateDeliveryStatus = async (req, res) => {
 
     try {
@@ -111,6 +114,98 @@ exports.updateDeliveryStatus = async (req, res) => {
 };
 
 
+const getToken = async () => {
+    try {
+        const response = await axios.post(`${BASE_URL}/api/authentication/getToken`, {
+            userIdentifyer: 'user', 
+            userProtector: 'dsh46+eTPeM63c'
+        });
+
+        if (response.data && response.data.tokenDetail) {
+            token = response.data.tokenDetail.token;
+            tokenExpiration = new Date(response.data.tokenDetail.expiration);
+        } else {
+            throw new Error('Unable to retrieve token');
+        }
+    } catch (error) {
+        console.error('Error retrieving token:', error);
+        throw new Error('Failed to get token');
+    }
+};
+
+
+
+const ensureToken = async (req, res, next) => {
+    try {
+        if (!token || new Date() >= tokenExpiration) {
+            await getToken();
+        }
+        next();
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: 'Failed to authenticate request', error:error });
+    }
+};
+
+
+exports.processDirectTransfer = [
+    ensureToken, // Add ensureToken as middleware
+    async (req, res) => {
+        try {
+            const { amount, bankCode, bankName, crAccount, description, drAccount, transactionReference } = req.body;
+
+            // Send the direct transfer request to the external API
+            const transferResponse = await axios.post(
+                `${BASE_URL}/api/transfer`,
+                {
+                    amount,
+                    bankCode,
+                    bankName,
+                    crAccount,
+                    description,
+                    drAccount,
+                    transactionReference,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            // Structure the response data to match a consistent format
+            const transferData = {
+                status: transferResponse.data.status,
+                transactionId: transferResponse.data.transactionId,
+                amount: transferResponse.data.amount,
+                bankCode: transferResponse.data.bankCode,
+                bankName: transferResponse.data.bankName,
+                crAccount: transferResponse.data.crAccount,
+                drAccount: transferResponse.data.drAccount,
+                description: transferResponse.data.description,
+                transactionReference: transferResponse.data.transactionReference,
+            };
+
+            // Send a successful response back to the client
+            res.status(200).json({
+                status: 'success',
+                message: 'Direct transfer processed successfully',
+                data: transferData
+            });
+
+        } catch (error) {
+            // Handle any errors that occur during the process
+            console.error('Error processing direct transfer:', error);
+
+            // Send an error response back to the client
+            res.status(500).json({
+                status: 'error',
+                message: 'Failed to process direct transfer',
+                error: error.message
+            });
+        }
+    }
+];
 
 
 

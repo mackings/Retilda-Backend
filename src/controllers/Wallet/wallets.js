@@ -9,6 +9,7 @@ const authString = Buffer.from(credentials).toString('base64');
 
 exports.createMandate = async (req, res) => {
     try {
+        
         const {
             contractCode,
             mandateReference,
@@ -27,7 +28,6 @@ exports.createMandate = async (req, res) => {
             debitAmount
         } = req.body;
 
-        const url = process.env.CREATE_MANDATE
         const requestBody = {
             contractCode,
             mandateReference,
@@ -45,7 +45,7 @@ exports.createMandate = async (req, res) => {
             mandateAmount,
             debitAmount
         };     
-        const response = await axios.post(url, requestBody, {
+        const response = await axios.post(process.env.CREATE_MANDATE, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${authString}`

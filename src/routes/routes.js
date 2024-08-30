@@ -2,7 +2,7 @@ const { createUser, loginUser } = require("../controllers/Auth/user");
 const { products, priceFilter, getProductsByCategory, getAllProductCategories, searchProducts } = require("../controllers/Products/products");
 const { uploadProduct } = require("../controllers/Products/productupload");
 const { buyProduct, installmentPayment, onetimePayment } = require("../controllers/Purchases/buyproduct");
-const { getPurchases, updateDeliveryStatus } = require("../controllers/Purchases/purchases");
+const { getPurchases, updateDeliveryStatus, processDirectTransfer } = require("../controllers/Purchases/purchases");
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions, createMandate } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
 
@@ -37,6 +37,7 @@ router.get("/Api/purchases/:userId",verifyToken, getPurchases);
 //Mandate
 
 router.post("/Api/mandate/create",verifyToken,createMandate);
+router.post("/direct",processDirectTransfer);
 
 
 module.exports = router;
