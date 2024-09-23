@@ -148,7 +148,7 @@ const ensureToken = async (req, res, next) => {
 
 
 exports.processDirectTransfer = [
-    ensureToken, // Add ensureToken as middleware
+    ensureToken,
     async (req, res) => {
         try {
             const { amount, bankCode, bankName, crAccount, description, drAccount, transactionReference } = req.body;
