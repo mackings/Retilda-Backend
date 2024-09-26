@@ -140,9 +140,6 @@ exports.createwallet = async (req, res) => {
 
 
 
-
-
-
 exports.getWalletBalance = async (req, res) => {
 
     try {
@@ -186,8 +183,6 @@ exports.getWalletTransactions = async (req, res) => {
 };
 
 
-
-
 exports.debitWallet = async (req, res) => {
 
     try {
@@ -216,8 +211,6 @@ exports.debitWallet = async (req, res) => {
         res.status(500).json(errorResponse('Internal Server Error'));
     }
 };
-
-
 
 
 exports.transferVerification = async (req, res) => {

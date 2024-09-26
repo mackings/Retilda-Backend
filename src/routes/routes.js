@@ -5,6 +5,7 @@ const { buyProduct, installmentPayment, onetimePayment } = require("../controlle
 const { getPurchases, updateDeliveryStatus, processDirectTransfer } = require("../controllers/Purchases/purchases");
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions, createMandate } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
+const directDebitController = require('../controllers/Direct Debit/debit');
 
 const router = require("express").Router();
 
@@ -38,6 +39,14 @@ router.get("/Api/purchases/:userId",verifyToken, getPurchases);
 
 router.post("/Api/mandate/create",verifyToken,createMandate);
 router.post("/direct",processDirectTransfer);
+
+//Direct Debit 
+
+router.post('/direct-debit/initiate', directDebitController.initiateAuthorization);
+router.get('/direct-debit/verify/:reference', directDebitController.verifyAuthorization);
+router.post('/direct-debit/charge', directDebitController.chargeCustomer);
+router.get('/direct-debit/charge/verify/:reference', directDebitController.verifyCharge);
+router.post('/direct-debit/deactivate', directDebitController.deactivateAuthorization);
 
 
 module.exports = router;
