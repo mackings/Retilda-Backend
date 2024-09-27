@@ -5,8 +5,8 @@ const {successResponse,errorResponse}= require("../components");
 
 app.use(express.json());
 
-const PAYSTACK_SECRET_KEY = 'sk_test_30a2ef7e97d38d32055c0017dc400e80784132b7';
-
+//const PAYSTACK_SECRET_KEY = 'sk_test_30a2ef7e97d38d32055c0017dc400e80784132b7';
+const PAYSTACK_SECRET_KEY = 'sk_live_ec7544326f2965fe19ea84843b910ad43f96139e';
 // Route to initiate direct debit authorization request
 
 

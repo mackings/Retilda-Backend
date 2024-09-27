@@ -21,6 +21,7 @@ const upload = multer({
 
 
 exports.uploadProduct = async (req, res) => {
+    
     try {
         upload(req, res, async function (err) {
             try {
