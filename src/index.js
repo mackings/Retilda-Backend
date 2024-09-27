@@ -7,6 +7,10 @@ const route = require("./routes/routes");
 app.use(express.json());
 app.use("/",route);
 
+app.get("/", ()=>{
+    res.send("Hello Vercel");
+});
+
 
 app.listen(process.env.PORT || 3000, async () => {
     console.log("RUNNING_LOCALS >>>", process.env.PORT || 3000);
