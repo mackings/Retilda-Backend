@@ -70,7 +70,7 @@ exports.initiateAuthorization = async (req, res) => {
         {
           authorization_code,
           email,
-          amount: amount * 100, // Amount in kobo (1 NGN = 100 kobo)
+          amount: amount, // Amount in kobo (1 NGN = 100 kobo)
           currency: 'NGN',
         },
         {
