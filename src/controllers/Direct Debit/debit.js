@@ -39,6 +39,7 @@ exports.initiateAuthorization = async (req, res) => {
   };
   
   // Verify Direct Debit Authorization
+  
   exports.verifyAuthorization = async (req, res) => {
     const { reference } = req.params;
   
@@ -65,12 +66,15 @@ exports.initiateAuthorization = async (req, res) => {
     const { authorization_code, email, amount } = req.body;
   
     try {
+      // Convert kobo to naira (in full NGN)
+      const amountInKobo = Math.round(amount * 100); // Convert naira to kobo
+  
       const response = await axios.post(
         'https://api.paystack.co/transaction/charge_authorization',
         {
           authorization_code,
           email,
-          amount: amount, // Amount in kobo (1 NGN = 100 kobo)
+          amount: amountInKobo, // Pass amount in kobo to Paystack
           currency: 'NGN',
         },
         {
@@ -81,12 +85,15 @@ exports.initiateAuthorization = async (req, res) => {
         }
       );
   
-      res.status(200).json(successResponse('Charge successful', response.data));
+      // Send response in naira format (dividing kobo by 100)
+      const amountInNaira = (amountInKobo / 100).toFixed(2); // Keep 2 decimal places
+      res.status(200).json(successResponse(`Charge successful: ${amountInNaira} NGN`, response.data));
     } catch (error) {
       console.error('Error charging customer:', error);
       res.status(400).json(errorResponse('Failed to charge customer', 400, error.message));
     }
   };
+  
   
   // Verify Charge
   exports.verifyCharge = async (req, res) => {

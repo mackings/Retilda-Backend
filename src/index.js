@@ -6,7 +6,6 @@ const route = require("./routes/routes");
 
 app.use(express.json());
 app.use("/",route);
-
 app.get("/", (req,res)=>{
     res.send("Hello Vercel");
 });

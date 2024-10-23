@@ -6,6 +6,7 @@ const { getPurchases, updateDeliveryStatus, processDirectTransfer } = require(".
 const { createwallet, getWalletBalance, debitWallet, transferVerification, getWalletTransactions, createMandate } = require("../controllers/Wallet/wallets");
 const { verifyToken } = require("../controllers/utils");
 const directDebitController = require('../controllers/Direct Debit/debit');
+const { createDedicatedWallet, createCustomer, createDedicatedAccount } = require("../controllers/Vwallets/createwallet");
 
 const router = require("express").Router();
 
@@ -25,6 +26,13 @@ router.post("/Api/verify-transfer",verifyToken, transferVerification);
 router.post("/Api/buyproduct",verifyToken, buyProduct);
 router.post("/Api/purchases/installment",verifyToken,installmentPayment);
 router.post("/Api/purchases/onetimepayment",verifyToken,onetimePayment);
+
+
+//Paystack Wallets 
+router.post("/Api/Customer/create",createCustomer);
+router.post("/Api/Customer/create-wallet",createDedicatedAccount);
+
+
 
 //Products
 router.post("/Api/products/updatedelivery",verifyToken, updateDeliveryStatus);
