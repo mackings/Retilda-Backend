@@ -48,6 +48,7 @@ app.post("/retilda/payments", async (req, res) => {
           await user.save();
 
           console.log("Transaction saved successfully for:", email);
+          console.log(transaction);
         } else {
           console.log("User not found for email or customer_code:", email || customer_code);
         }
