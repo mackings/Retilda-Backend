@@ -99,11 +99,101 @@ const walletSchema = new mongoose.Schema({
   }
 });
 
+
+const transactionSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  reference: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  amount: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['success', 'failed'],
+    required: true
+  },
+  paymentDate: {
+    type: Date,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    required: true
+  },
+  gatewayResponse: {
+    type: String,
+    required: true
+  },
+  channel: {
+    type: String,
+    required: true
+  },
+  currency: {
+    type: String,
+    required: true
+  },
+  ipAddress: {
+    type: String
+  },
+  log: {
+    timeSpent: Number,
+    attempts: Number,
+    authentication: String,
+    errors: Number,
+    success: Boolean,
+    mobile: Boolean,
+    history: [
+      {
+        type: {
+          type: String
+        },
+        message: {
+          type: String
+        },
+        time: {
+          type: Number
+        }
+      }
+    ]
+  },
+  customer: {
+    id: Number,
+    firstName: String,
+    lastName: String,
+    email: String,
+    customerCode: String,
+    phone: String
+  },
+  authorization: {
+    authorizationCode: String,
+    bin: String,
+    last4: String,
+    expMonth: String,
+    expYear: String,
+    cardType: String,
+    bank: String,
+    countryCode: String,
+    brand: String,
+    accountName: String
+  },
+  plan: {
+    type: Object // To store any plan information (even if currently null)
+  }
+});
+
+
 // Main user schema
 const userSchema = new mongoose.Schema({
   fullname: {
     type: String,
-    required: false // Not required here since Paystack does not provide it as a single field
+    required: false 
   },
   email: {
     type: String,
@@ -112,7 +202,7 @@ const userSchema = new mongoose.Schema({
   },
   customerCode: {
     type: String,
-    required: true,
+    required: false,
     unique: true
   },
   phone: {
@@ -133,7 +223,8 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   wallet: walletSchema, // Embedding the wallet schema
-  purchases: [purchaseSchema] // Embedding the purchase schema
+  purchases: [purchaseSchema], // Embedding the purchase schema
+  transactions: [transactionSchema]
 });
 
 // Set fullname virtual field based on first and last name
